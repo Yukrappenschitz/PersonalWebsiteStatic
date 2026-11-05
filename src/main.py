@@ -1,7 +1,17 @@
-print("Hello World") 
+from textnode import TextNode, TextType
+
+def main():
+
+    test_text = TextNode("testing", TextType.TEXT,)
+    test_link = TextNode("testing", TextType.LINK, "mahnuhtsachk")
+
+    print(test_text, test_link)
+
+main()
 
 
 
+# from creating the main.py Shell Script Assignment
 """
 ###### ASSIGNMENT
 1. Create a simple main.sh shell script in the root of the project. This will be a convenient way to run our code. It should contain:
