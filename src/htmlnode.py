@@ -37,7 +37,7 @@ class HTMLNode: # "HTMLNode" class will represent a "node" in an HTML document t
 
         return props_str
 
-    def __repr__(self): # 6. Add a __repr__(self) method. Give yourself a way to print an HTMLNode object and see its tag, value, children, and props. This will be useful for your debugging.
+    def __repr__(self) -> str: # 6. Add a __repr__(self) method. Give yourself a way to print an HTMLNode object and see its tag, value, children, and props. This will be useful for your debugging.
 
         HTML_string_repr = f'HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})'
 
@@ -62,7 +62,7 @@ class LeafNode(HTMLNode): # A LeafNode is a type of HTMLNode that represents a s
                  tag: str,
                  value: str,
                  props: dict[str,str] | None = None
-                 ): # 1. Create a child class of HTMLNode called LeafNode. Its constructor should differ slightly from the HTMLNode class because:
+                 ) -> None:                  # 1. Create a child class of HTMLNode called LeafNode. Its constructor should differ slightly from the HTMLNode class because:
 
         super().__init__(tag, value, None, props)  # 1.c Use the super() function to call the constructor of the HTMLNode class. 
                                                  # !! remember the super method calls the parent class constructor and you can pass it the values to initialize the attributes of the child class DIRECTLY from the super().__init__(`arguments to pass`) call
@@ -70,7 +70,7 @@ class LeafNode(HTMLNode): # A LeafNode is a type of HTMLNode that represents a s
                                                 # 1.b Both the value and tag data members should be required (even though the tag's value may be None), while props can remain optional like the HTMLNode constructor.
 
     
-    def to_html(self):  # 2. Add a .to_html() method that renders a leaf node as an HTML string (by returning a string).
+    def to_html(self) -> str:  # 2. Add a .to_html() method that renders a leaf node as an HTML string (by returning a string).
 
         if self.value == None: # 2.a If the leaf node has no value, it should raise a ValueError. All leaf nodes must have a value.
             raise ValueError('INVALID HTML: no value. LeafNode has no value. ALL LEAF NODES MUST HAVE A VALUE')
@@ -83,7 +83,7 @@ class LeafNode(HTMLNode): # A LeafNode is a type of HTMLNode that represents a s
         return HTML_render_str
 
     
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         LEAF_string_repr = f'LeafNode({self.tag}, {self.value}, {self.props})'
 
@@ -100,6 +100,39 @@ class LeafNode(HTMLNode): # A LeafNode is a type of HTMLNode that represents a s
             and self.children == self.children 
             and self.props == other.props 
         )
+
+class ParentNode(HTMLNode): # ParentNode class will handle the nesting of HTML nodes inside of one another. Any HTML node that's not "leaf" node (i.e. it has children) is a "parent" node.
+
+    def __init__(
+            self,
+            tag: str,
+            children: list[HTMLNode],
+            props: dict[str,str] | None = None
+                 ) -> None:          # 1. Create another child class of HTMLNode called ParentNode. Its constructor should differ from HTMLNode in that:
+                             # 1.a The tag and children arguments are not optional
+                             # 1.b It doesn't take a value argument, 
+                             # 1.c props is optional
+                            # 1.d (It's the exact opposite of the LeafNode class)
+        
+        super().__init__(tag, None, children, props)  # just using super to initailiaze parent class constructor by passing the values from ParentNode initialization
+
+    def to_html(self) -> str:  # does not pretty print the HTML since most editors auto format HTML
+
+        if self.tag == None:    # 2.1 If the object doesn't have a tag, raise a ValueError.
+            raise ValueError('INVALID HTML. ParentNode tag has no tag.')
+        
+        if self.children == None:     # 2.2 If children is missing, raise a ValueError with a different message.
+            raise ValueError('INVALID HTML. ParentNode children has no children. Parent Node MUST have children.')
+                                   # 2.3 Otherwise, return a string representing the HTML tag of the node and its children. This should be a recursive method (each recursion being called on a nested child node).
+        children_str = ''
+
+        for children in self.children:  # !!! NEEDS this recursive approach. a ParentNode can contain another ParentNode, which can contain another ParentNode, and so on.
+            children_str += children.to_html()
+                                          # prints a single long asz line of html !!! DOES NOT PRETTY PRINT THE HTML Most editors are easily configured to auto-format HTML on save, so we won't worry about implementing that in our code.
+        html_str = f'<{self.tag}>{children_str}</{self.tag}>'
+
+        return html_str
+
 
 
 
