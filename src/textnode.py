@@ -18,7 +18,12 @@ class TextType(Enum):  # 4. In textnode.py create an enum called TextType. It sh
 
 class TextNode:  
 
-    def __init__(self, text, text_type: TextType, url = None) -> None:  # 5. In textnode.py create a class called TextNode. It should have 3 properties that can be set in the constructor:
+    def __init__(
+            self, 
+            text: str, 
+            text_type: TextType, 
+            url: str| None = None
+            ) -> None:  # 5. In textnode.py create a class called TextNode. It should have 3 properties that can be set in the constructor:
         
         self.text = text     # The text content of the node
         
@@ -26,10 +31,10 @@ class TextNode:
         
         self.url = url     # The URL of the link or image, if the text is a link. Default to None if nothing is passed in.
 
-    def __eq__(self, other) -> bool: # 6. Create an __eq__ equality method on TextNode that compares self to another TextNode instance (other) and returns True if all of their properties are equal. Our future unit tests will rely on this method to compare objects.
+    def __eq__(self, other: "TextNode") -> bool: # 6. Create an __eq__ equality method on TextNode that compares self to another TextNode instance (other) and returns True if all of their properties are equal. Our future unit tests will rely on this method to compare objects.
           
           # just basic type checking using built in python function `isinstance()`
-        if not isinstance(self, TextNode) or not isinstance(other, TextNode):
+        if not isinstance(other, TextNode):
             return False 
 
         # Python doesn't automatically compare all your class attributes when you implement __eq__. You need to explicitly tell it which properties to compare. 
@@ -53,6 +58,14 @@ TextNode(TEXT, TEXT_TYPE, URL)
 
 Where TEXT, TEXT_TYPE, and URL are the values of the text, text_type, and url properties, respectively.
 """ 
+
+# TEXT NODE AND HTML NODE THOUGHT PROCESS
+
+"""
+Our "TextNode" class represents the various types of inline text that can exist in HTML and Markdown.
+
+Our "HTMLNode" class will represent a "node" in an HTML document tree (like a <p> tag and its contents, or an <a> tag and its contents). It can be block level or inline, and is designed to only output HTML.
+"""
 
 
 # ENUM AND CLASS CREATION THOUGHT PROCESS 
