@@ -1,5 +1,6 @@
 
 from enum import Enum 
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TextType(Enum):  # 4. In textnode.py create an enum called TextType. It should cover all the inline text types mentioned above.
 
@@ -52,8 +53,34 @@ class TextNode:
         return string 
 
 
+def text_node_to_html_node(text_node: TextNode) -> LeafNode: # It should handle each type of the TextType enum. If it gets a TextNode that is none of those types, it should raise an exception. Otherwise, it should return a new LeafNode object.
 
+    match text_node.text_type:
 
+        case TextType.TEXT:   # TextType.TEXT: This should return a LeafNode with no tag, just a raw text value.
+            return LeafNode(None, text_node.text, None) 
+
+        case TextType.BOLD:    # TextType.BOLD: This should return a LeafNode with a "b" tag and the text
+            return LeafNode("b", text_node.text, None)
+
+        case TextType.ITALIC:   # TextType.ITALIC: "i" tag, text
+            return LeafNode("i", text_node.text, None) 
+
+        case TextType.CODE:      # TextType.CODE: "code" tag, text
+            return LeafNode("code", text_node.text, None)
+
+        case TextType.LINK:    # TextType.LINK: "a" tag, anchor text, and "href" prop
+            if text_node.url is None:
+                raise ValueError("INVALID URL")
+            return LeafNode("a", text_node.text, {"href": text_node.url})
+
+        case TextType.IMAGE:    # TextType.IMAGE: "img" tag, empty string value, "src" and "alt" props ("src" is the image URL, "alt" is the alt text) 
+            if text_node.url is None:
+                raise ValueError("INVALID URL")
+            return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text} )
+
+        case _:
+            raise ValueError(f'INVALID TEXT TYPE: {text_node.text_type}. Does not match any implemented Text Types in TextType enum.')
 
 
 """

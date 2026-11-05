@@ -59,7 +59,7 @@ class HTMLNode: # "HTMLNode" class will represent a "node" in an HTML document t
 class LeafNode(HTMLNode): # A LeafNode is a type of HTMLNode that represents a single HTML tag with no children. For example, a simple <p> tag with some text inside of i
 
     def __init__(self, 
-                 tag: str,
+                 tag: str | None,
                  value: str,
                  props: dict[str,str] | None = None
                  ) -> None:                  # 1. Create a child class of HTMLNode called LeafNode. Its constructor should differ slightly from the HTMLNode class because:
@@ -132,7 +132,6 @@ class ParentNode(HTMLNode): # ParentNode class will handle the nesting of HTML n
         html_str = f'<{self.tag}>{children_str}</{self.tag}>'
 
         return html_str
-
 
 
 
