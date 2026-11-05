@@ -1,7 +1,5 @@
 
-
-
-class HTMLNode:
+class HTMLNode: # "HTMLNode" class will represent a "node" in an HTML document tree (like a <p> tag and its contents, or an <a> tag and its contents). It can be block level or inline, and is designed to only output HTML.
 
     def __init__(
             self, 
@@ -21,7 +19,7 @@ class HTMLNode:
 
     def to_html(self): # 4. Add a to_html(self) method. For now, it should just raise a NotImplementedError. Child classes will override this method to render themselves as HTML.
 
-        raise NotImplementedError("to_html method not implemented")
+        raise NotImplementedError('to_html method not implemented')
 
 
 
@@ -41,9 +39,9 @@ class HTMLNode:
 
     def __repr__(self): # 6. Add a __repr__(self) method. Give yourself a way to print an HTMLNode object and see its tag, value, children, and props. This will be useful for your debugging.
 
-        string_representation = f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
+        HTML_string_repr = f'HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})'
 
-        return string_representation
+        return HTML_string_repr
 
     def __eq__(self, other: "HTMLNode") -> bool: # not necessary to implement for HTMLNode as it is not the same as TextNode
 
@@ -57,6 +55,71 @@ class HTMLNode:
             and self.props == other.props 
         )
 
+
+class LeafNode(HTMLNode): # A LeafNode is a type of HTMLNode that represents a single HTML tag with no children. For example, a simple <p> tag with some text inside of i
+
+    def __init__(self, 
+                 tag: str,
+                 value: str,
+                 props: dict[str,str] | None = None
+                 ): # 1. Create a child class of HTMLNode called LeafNode. Its constructor should differ slightly from the HTMLNode class because:
+
+        super().__init__(tag, value, None, props)  # 1.c Use the super() function to call the constructor of the HTMLNode class. 
+                                                 # !! remember the super method calls the parent class constructor and you can pass it the values to initialize the attributes of the child class DIRECTLY from the super().__init__(`arguments to pass`) call
+                                                # !!! passing `None` as the children argument, 1.a The LeafNode class It should not allow for any children 
+                                                # 1.b Both the value and tag data members should be required (even though the tag's value may be None), while props can remain optional like the HTMLNode constructor.
+
+    
+    def to_html(self):  # 2. Add a .to_html() method that renders a leaf node as an HTML string (by returning a string).
+
+        if self.value == None: # 2.a If the leaf node has no value, it should raise a ValueError. All leaf nodes must have a value.
+            raise ValueError('INVALID HTML: no value. LeafNode has no value. ALL LEAF NODES MUST HAVE A VALUE')
+
+        if self.tag == None:  # 2.b If there is no tag (e.g. it's None), the value should be returned as raw text.
+            return self.value 
+        
+        HTML_render_str = f'<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>'  # parent HTMLNode already has a props to HTML method built that can be reused 
+
+        return HTML_render_str
+
+    
+    def __repr__(self):
+
+        LEAF_string_repr = f'LeafNode({self.tag}, {self.value}, {self.props})'
+
+        return LEAF_string_repr
+
+    def __eq__(self, other: "LeafNode") -> bool: # not necessary to implement for LeafNode as it is not the same as TextNode
+
+        if not isinstance(other, LeafNode): # basic type checking on other to see if it is `LeafNode` class object
+            return False 
+
+        return (
+            self.tag == other.tag
+            and self.value == other.value
+            and self.children == self.children 
+            and self.props == other.props 
+        )
+
+
+
+
+# LEAF NODE explanation + text examples
+"""
+Time to render some HTML strings!
+
+A LeafNode is a type of HTMLNode that represents a single HTML tag with no children. For example, a simple <p> tag with some text inside of it:
+
+<p>This is a paragraph of text.</p>
+
+We call it a "leaf" node because it's a "leaf" in the tree of HTML nodes. It's a node with no children. In this next example, <p> is not a leaf node, but <b> is.
+
+<p>
+  This is a paragraph. It can have a lot of text inside tbh.
+  <b>This is bold text.</b>
+  This is the last sentence.
+</p>
+"""
 
 # method props_to_html example output
 """
