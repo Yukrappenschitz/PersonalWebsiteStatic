@@ -3,6 +3,25 @@ import re    # built in python module for Regex
 from textnode import TextType, TextNode
 
 
+def text_to_textnodes(text: str) -> list[TextNode]:
+                                                  #  all the "splitting" functions together into 
+                                                  # a function that can convert a raw string of markdown-flavored text into a list of TextNode objects.
+
+    text_node = TextNode(text, TextType.TEXT, None)
+
+    text_BOLD = split_nodes_delimiter([text_node], "**", TextType.BOLD)
+
+    text_ITALIC = split_nodes_delimiter(text_BOLD, "_", TextType.ITALIC )
+
+    text_CODE = split_nodes_delimiter(text_ITALIC, "`", TextType.CODE)
+
+    text_IMAGES = split_nodes_image(text_CODE)
+
+    text_LINKS = split_nodes_link(text_IMAGES)
+
+    
+    return text_LINKS
+
 # will need to be able to split raw markdown text into TextNodes based on images and links.
 # splitting raw markdown regular links into TextNodes 
 def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
@@ -126,7 +145,7 @@ def extract_markdown_links(text: str) -> list[tuple[str,str]]: # 2. extracts mar
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
                                                                     # It takes a list of "old nodes", a delimiter, and a text type. It should return a new list of nodes, where any "text" type nodes in the input list are (potentially) split into multiple nodes based on the syntax 
-                                                                # it will take care of inline code, bold, and italic text using the same logic! The delimiter and matching text_type are the only thing that changes, e.g. ** for bold, _ for italic, and a backtick for code. 
+                                                                # it will take care of inline code, bold, and italic text using the same logic! The delimiter and matching text_type are the only thing that changes, e.g. ** for bold, _ for italic, and a backtick ` for code. 
                                                                 # because it operates on an input list, we can call it multiple times to handle different types of delimiters. The order in which you check for different delimiters matters, which actually simplifies implementation.
     new_nodes = []
 
@@ -249,9 +268,3 @@ The .extend() list method was useful
 Write a bunch of tests. Be sure to test various types of delimiters.
 """
 
-node = TextNode(
-    "This is text with an ![test_image](https://i.imgur.com/zjjcJKZ.png) and another ![second_image](https://i.imgur.com/3elNhQu.png)",
-    TextType.TEXT,
-)
-new_nodes = split_nodes_image([node])
-print(new_nodes)
