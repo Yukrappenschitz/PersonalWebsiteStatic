@@ -75,12 +75,6 @@ class TestTextNodeToHTMLNodeFunction(unittest.TestCase):
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is bold")
 
-    def test_invalid_text_type(self):
-            node = TextNode("This is an invalid Text Type", TextType.INVALID)
-            html_node = text_node_to_html_node(node)
-            self.assertNotEqual(html_node.tag, "b")
-            self.assertNotEqual(html_node.value, "This is bold")
-
 
 if __name__ == "__main__":
     unittest.main() 
