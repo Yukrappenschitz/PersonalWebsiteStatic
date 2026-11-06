@@ -6,21 +6,21 @@ from textnode import TextType, TextNode
 def text_to_textnodes(text: str) -> list[TextNode]:
                                                   #  all the "splitting" functions together into 
                                                   # a function that can convert a raw string of markdown-flavored text into a list of TextNode objects.
+                                    # !!! ORDER IS IMPORTANT IN WHICH  `split_nodes_` functions are called, inline text things like bold, italic and code NEED to be called first and THEN inline IMAGES and THEN LASTLY regular links
+    text_nodes = [TextNode(text, TextType.TEXT, None)]  # important to make it into a list, as the functions expect a list[TextNode]
 
-    text_node = TextNode(text, TextType.TEXT, None)
+    text_nodes = split_nodes_delimiter(text_nodes, "**", TextType.BOLD)
 
-    text_BOLD = split_nodes_delimiter([text_node], "**", TextType.BOLD)
+    text_nodes = split_nodes_delimiter(text_nodes, "_", TextType.ITALIC )
 
-    text_ITALIC = split_nodes_delimiter(text_BOLD, "_", TextType.ITALIC )
+    text_nodes = split_nodes_delimiter(text_nodes, "`", TextType.CODE)
 
-    text_CODE = split_nodes_delimiter(text_ITALIC, "`", TextType.CODE)
+    text_nodes = split_nodes_image(text_nodes)
 
-    text_IMAGES = split_nodes_image(text_CODE)
-
-    text_LINKS = split_nodes_link(text_IMAGES)
+    text_nodes = split_nodes_link(text_nodes)
 
     
-    return text_LINKS
+    return text_nodes
 
 # will need to be able to split raw markdown text into TextNodes based on images and links.
 # splitting raw markdown regular links into TextNodes 
