@@ -1,7 +1,32 @@
+import re    # built in python module for Regex
 
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from textnode import TextType, TextNode
 
-from textnode import TextType, TextNode, text_node_to_html_node
+# extracting markdown Images
+def extract_markdown_images(text: str) -> list[tuple[str,str]]: # 1. takes raw markdown text and returns a list of tuples. Each tuple should contain the alt text and the URL of any markdown images. 
+    
+    pattern_regex_images = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
+
+    matches_images = re.findall( 
+        pattern_regex_images, 
+        text
+        )
+
+    return matches_images
+
+
+# extracting markdown regular links 
+def extract_markdown_links(text: str) -> list[tuple[str,str]]: # 2. extracts markdown links instead of images. It should return tuples of anchor text and URLs.  
+
+    pattern_regex_links = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+
+    matches_reg_links = re.findall(
+        pattern_regex_links,
+        text
+    )
+
+    return matches_reg_links
+
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
                                                                     # It takes a list of "old nodes", a delimiter, and a text type. It should return a new list of nodes, where any "text" type nodes in the input list are (potentially) split into multiple nodes based on the syntax 
@@ -36,6 +61,24 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
     
     return new_nodes
 
+
+# EXTRACTING LINKS FUNCTIONS EXAMPLES:
+
+# Extracting Image links example
+"""
+1. Create a function extract_markdown_images(text) that takes raw markdown text and returns a list of tuples. Each tuple should contain the alt text and the URL of any markdown images. For example:
+
+text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+print(extract_markdown_images(text))
+# [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+"""
+# Extracting normal markdown links example
+"""
+2. Create a similar function extract_markdown_links(text) that extracts markdown links instead of images. It should return tuples of anchor text and URLs. For example:
+text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+print(extract_markdown_links(text))
+# [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+"""
 
 
 # split_nodes_delimiter Function Thought Process and Functionality
