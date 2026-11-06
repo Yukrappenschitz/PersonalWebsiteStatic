@@ -2,6 +2,102 @@ import re    # built in python module for Regex
 
 from textnode import TextType, TextNode
 
+
+# will need to be able to split raw markdown text into TextNodes based on images and links.
+# splitting raw markdown regular links into TextNodes 
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+
+    new_nodes = []
+
+    for old_node in old_nodes:
+        
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        
+        original_text = old_node.text 
+        
+        links = extract_markdown_links(original_text)
+
+        if len(links) == 0:    # If there are no images or links respectively, just return a list with the original TextNode in it
+            new_nodes.append(old_node)
+            continue 
+
+        for link in links:
+
+            sections = original_text.split( f"[{link[0]}]({link[1]})", 1 )  # using specific "[alt text](specific url)" string as delimiter, and  maxsplit=1, TO separate out text and links
+
+            if len(sections) != 2:        # since splitting the string into 2 sections, if we dont have 2 len list, the section was not 
+                raise ValueError(f"invalid markdown, link section not closed: {sections}")
+
+            if sections[0] != "":  # remember since we are using the delimiter to separate out, sections[0] index has text and the preceeded link is filtered out of the resulting list, so we can add [0] as text
+                new_nodes.append(TextNode(sections[0], TextType.TEXT))
+                                
+                                # appending found indivdial regular link as TextNode 
+            new_nodes.append(
+                TextNode(
+                    link[0], 
+                    TextType.LINK, 
+                    link[1]
+                    )
+                )
+                                            # !!! need to split list for next iteration since we have split and extracted out the first image link
+            original_text = sections[1]   
+
+        if original_text != "":   # need to take care of any remaining text that ISNT empty  !! Do not add empty strings 
+            new_nodes.append(TextNode(original_text, TextType.TEXT))
+        
+    return new_nodes
+
+
+# splitting raw markdown image links into TextNodes 
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+
+    new_nodes = []
+
+    for old_node in old_nodes:
+
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue 
+
+        original_text = old_node.text    # making a copy of the text 
+
+        images = extract_markdown_images(original_text)   # extracting out the image links as a list of tuples 
+
+        if len(images) == 0:       # If there are no images or links respectively, just return a list with the original TextNode in it 
+            new_nodes.append(old_node)
+            continue
+
+        for image in images:      # need to loop over each regular "link" extracted by `extract_markdown_links` function` 
+
+            sections = original_text.split(f"![{image[0]}]({image[1]})", 1) # using specific "[alt text](specific url)" string as delimiter, and  maxsplit=1, TO separate out text and links
+
+            if len(sections) != 2: # since splitting the string into 2 sections, if we dont have 2 len list, the section was not 
+                raise ValueError(f"invalid markdown, link section not closed: {sections}")
+
+            if sections[0] != "": # remember since we are using the delimiter to separate out, sections[0] index has text and the preceeded link is filtered out of the resulting list, so we can add [0] as text
+                new_nodes.append( TextNode(sections[0], TextType.TEXT) )
+
+                                               # appending found indivdial image link as TextNode 
+            new_nodes.append(
+                TextNode(
+                    image[0],
+                    TextType.IMAGE,
+                    image[1],
+                )
+            ) 
+                                                # !!! need to split list for next iteration since we have split and extracted out the first image link
+            original_text = sections[1]
+
+        if original_text != "":       # need to take care of any remaining text that ISNT empty  !! Do not add empty strings
+            new_nodes.append( TextNode(original_text, TextType.TEXT) ) 
+
+    return new_nodes
+
+
+
+
 # extracting markdown Images
 def extract_markdown_images(text: str) -> list[tuple[str,str]]: # 1. takes raw markdown text and returns a list of tuples. Each tuple should contain the alt text and the URL of any markdown images. 
     
@@ -62,6 +158,41 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
     return new_nodes
 
 
+# SPLITTING RAW MARKDOWN IMAGES AND REGULAR LINKS INTO TextNodes
+
+"""
+They should behave very similarly to split_nodes_delimiter, but obviously don't need a delimiter or a text type as input, because they always operate on images or links respectively. Here's some example usage:
+
+node = TextNode(
+    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    TextType.TEXT,
+)
+new_nodes = split_nodes_link([node])
+# [
+#     TextNode("This is text with a link ", TextType.TEXT),
+#     TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+#     TextNode(" and ", TextType.TEXT),
+#     TextNode(
+#         "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+#     ),
+# ]
+
+TIPS
+
+Make use of the extraction functions we wrote
+
+If there are no images or links respectively, just return a list with the original TextNode in it
+
+Don't append any TextNodes that have empty text to the final list
+
+Your split_nodes_image and split_nodes_link functions will be very similar. You can try to share code between them if you want, but I was a copy/paste grug dev for this step.
+
+You can use the .split() method with large strings as the delimiter, and it has an optional second "maxsplits" parameter, which you can set to 1 if you only want to split the string once at most. For each image extracted from the text, I split the text before and after the image markdown. For example:
+
+sections = original_text.split(f"![{image_alt}]({image_link})", 1)
+"""
+
+
 # EXTRACTING LINKS FUNCTIONS EXAMPLES:
 
 # Extracting Image links example
@@ -118,3 +249,9 @@ The .extend() list method was useful
 Write a bunch of tests. Be sure to test various types of delimiters.
 """
 
+node = TextNode(
+    "This is text with an ![test_image](https://i.imgur.com/zjjcJKZ.png) and another ![second_image](https://i.imgur.com/3elNhQu.png)",
+    TextType.TEXT,
+)
+new_nodes = split_nodes_image([node])
+print(new_nodes)
