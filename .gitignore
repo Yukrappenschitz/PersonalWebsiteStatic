@@ -9,3 +9,8 @@ wheels/
 # Virtual environments
 .venv
 .env
+
+
+# Generated files 
+
+#public/ 

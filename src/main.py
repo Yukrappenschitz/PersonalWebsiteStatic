@@ -47,7 +47,7 @@ def copy_from_source_to_destination(source_dir: str, destination_dir: str): # 2.
 
 
 def main():
-    copy_from_source_to_destination("invalid_source","invalid_destination")
+    copy_from_source_to_destination("static","public")
 
 main()
 
