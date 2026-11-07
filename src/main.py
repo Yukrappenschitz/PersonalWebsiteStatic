@@ -3,6 +3,11 @@ import shutil
 from textnode import TextNode, TextType
 
 
+def main():
+    copy_from_source_to_destination("invalid_source","invalid_destination")
+
+main()
+
 
 def copy_from_source_to_destination(source_dir: str, destination_dir: str):
 
@@ -12,7 +17,7 @@ def copy_from_source_to_destination(source_dir: str, destination_dir: str):
         is_valid_path_destination: bool = os.path.exists(destination_dir)
 
         if is_valid_path_source == False or is_valid_path_destination == False:
-            raise Exception("error: invalid directory path supplied")
+            raise Exception("error: invalid path supplied")
 
                                                     # It should first delete all the contents of the destination directory (public) to ensure that the copy is clean.
         # !!! removing ALL content from destination_dir
@@ -21,11 +26,22 @@ def copy_from_source_to_destination(source_dir: str, destination_dir: str):
         # RECREATING THE DELETED destination_dir
         os.mkdir(destination_dir)
 
+        if not os.path.isfile(source_dir):
+            list_dir = os.listdir(source_dir)
+            print(list_dir)
+            for dir in list_dir:
+                print(dir)
+                copy_from_source_to_destination(dir, destination_dir)
 
-
+        if os.path.isfile(source_dir) == True:
+            shutil.copy(source_dir, destination_dir)
         
     except Exception as e:
         return f'Error: {type(e).__name__} - {e}'
+
+
+
+
 
 
 """
@@ -45,13 +61,5 @@ def copy_from_source_to_destination(source_dir: str, destination_dir: str):
 
 
 
-def main():
-
-    test_text = TextNode("testing", TextType.TEXT,)
-    test_link = TextNode("testing", TextType.LINK, "mahnuhtsachk")
-
-    print(test_text, test_link)
-
-main()
 
 
