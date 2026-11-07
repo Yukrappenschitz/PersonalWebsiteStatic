@@ -3,42 +3,53 @@ import shutil
 from textnode import TextNode, TextType
 
 
+def copy_from_source_to_destination_r(source_dir: str, destination_dir:str):  # a recursive helper function that copies all the contents from a source directory to a destination directory (in our case, static to public)
+
+    for name in os.listdir(source_dir):
+        source_path = os.path.join(source_dir, name)
+        destination_path = os.path.join(destination_dir, name)
+
+        if os.path.isfile(source_path):
+            print(f'copying file: {source_path}')
+            shutil.copy(source_path, destination_path)
+        
+        else:                                 # if we hit a directory in the source, need to make that same directory in the destination_dir and THEN call the recursive function
+            print(f'creating directory: {destination_path}')
+            os.makedirs(destination_path)
+
+            copy_from_source_to_destination_r(source_path, destination_path)
+
+
+def copy_from_source_to_destination(source_dir: str, destination_dir: str): # 2. a recursive function that copies all the contents from a source directory to a destination directory (in our case, static to public) 
+
+    try:
+        # source_dir path verification
+        is_valid_path_source: bool = os.path.exists(source_dir)
+
+        if is_valid_path_source == False:
+            raise Exception(f'error: invalid path supplied: {source_dir}')
+        
+        if os.path.exists(destination_dir): # 2.a It should first delete all the contents of the destination directory (public) to ensure that the copy is clean.
+        
+            shutil.rmtree(destination_dir)   # !!! removing ALL content from destination_dir
+
+        os.mkdir(destination_dir)     # RECREATING THE DELETED destination_dir
+
+        # recursive copy function call
+
+        copy_from_source_to_destination_r(source_dir , destination_dir)   # It should copy all files and subdirectories, nested files, etc.
+        
+
+    except Exception as e:
+        raise FileExistsError(f'{e}')
+
+
+
+
 def main():
     copy_from_source_to_destination("invalid_source","invalid_destination")
 
 main()
-
-
-def copy_from_source_to_destination(source_dir: str, destination_dir: str):
-
-    try:
-        # dir path verification
-        is_valid_path_source: bool = os.path.exists(source_dir)
-        is_valid_path_destination: bool = os.path.exists(destination_dir)
-
-        if is_valid_path_source == False or is_valid_path_destination == False:
-            raise Exception("error: invalid path supplied")
-
-                                                    # It should first delete all the contents of the destination directory (public) to ensure that the copy is clean.
-        # !!! removing ALL content from destination_dir
-        shutil.rmtree(destination_dir)
-
-        # RECREATING THE DELETED destination_dir
-        os.mkdir(destination_dir)
-
-        if not os.path.isfile(source_dir):
-            list_dir = os.listdir(source_dir)
-            print(list_dir)
-            for dir in list_dir:
-                print(dir)
-                copy_from_source_to_destination(dir, destination_dir)
-
-        if os.path.isfile(source_dir) == True:
-            shutil.copy(source_dir, destination_dir)
-        
-    except Exception as e:
-        return f'Error: {type(e).__name__} - {e}'
-
 
 
 
