@@ -1,6 +1,7 @@
 from enum import Enum
-from textnode import TextNode, TextType 
-
+from textnode import TextNode, TextType, text_node_to_html_node
+from htmlnode import HTMLNode, ParentNode, LeafNode
+from inline_markdown import split_nodes_delimiter, split_nodes_link, split_nodes_image, text_to_textnodes
 class BlockType(Enum):  # Our static site generator supports 6 types of markdown blocks
                              # 1. Create a BlockType enum with the block types 
     
@@ -84,6 +85,34 @@ def markdown_to_blocks(markdown: str) -> list[str] :   # It takes a raw Markdown
             filtered_blocks.append(block)
             
     return filtered_blocks 
+
+# CONVERTING MARKDOWN raw text TO HTMLNodes
+
+def markdown_to_html_node(markdown: str) -> list[HTMLNode]: #  converts a full markdown document into a single parent HTMLNode. 
+                                     # That one parent HTMLNode should (obviously) contain many child HTMLNode objects representing the nested elements.
+    
+    blocks = markdown_to_blocks(markdown) # 1. Split the markdown into blocks (you already have a function for this)
+
+    for block in blocks:  # 2. Loop over each block:
+
+        type_block = block_to_block_type(block)   # 2.1 Determine the type of block (you already have a function for this) 
+
+        match type_block:
+
+            case BlockType.HEADING:
+                helper_HEADING(block)
+
+            case BlockType.PARAGRAPH:
+
+
+
+def helper_HEADING(block: str) -> HTMLNode:
+
+    return HTMLNode("p",block,None,None)
+
+
+
+
 
 
 # block_to_block_type USING more python keywords:
