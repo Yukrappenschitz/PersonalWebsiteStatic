@@ -5,16 +5,17 @@ from textnode import TextNode, TextType
 
 from copy_static import copy_from_source_to_destination
 
-from gencontent import generate_page
+from gencontent import generate_page, generate_pages_recursive
 
-# Source Directory Path
+# Static Directory Path
 dir_path_static = "./static"
 # Destination Directory Path
 dir_path_public = "./public"
-
-# GENERATING PAGES
+# Content Directory Path
 dir_path_content = "./content"
-template_path_html = "./template.html"
+
+# Template HTML file path
+template_path = "./template.html"
 
 
 def main():
@@ -27,13 +28,17 @@ def main():
     copy_from_source_to_destination(dir_path_static,dir_path_public)
 
     # page generation
-    print("Generating page...")         
+    print("Generating pages...")         
+
+    generate_pages_recursive(dir_path_content, template_path, dir_path_public)
+
+
     
-    generate_page(
+    """generate_page(
         os.path.join(dir_path_content, "index.md"), 
         template_path_html, 
         os.path.join(dir_path_public, "index.html")
-        )
+        )"""
 
 
 

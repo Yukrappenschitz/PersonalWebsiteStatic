@@ -1,5 +1,6 @@
 import os 
 import shutil
+import pathlib
 
 from markdown_blocks import (
     BlockType,
@@ -7,6 +8,32 @@ from markdown_blocks import (
     block_to_block_type, 
     markdown_to_html_node, 
 )
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+
+    list_entry_dir = os.listdir(dir_path_content)
+
+    for entry in list_entry_dir:
+        from_path = os.path.join(dir_path_content, entry)
+        dest_path = os.path.join(dest_dir_path,entry)
+        
+        if os.path.isfile(from_path):
+
+            if from_path.endswith(".md"):
+
+                dest_path_html = os.path.splitext(dest_path)[0] + ".html"   # need to strip .md file extension and replace with .html
+
+                generate_page(from_path, template_path, dest_path_html)
+            
+        else:
+            generate_pages_recursive( 
+                            from_path,
+                            template_path, 
+                            dest_path
+                            )
+            
+    
+
 
 
 def generate_page(from_path: str, template_path: str, dest_path: str):      # 5.Create a generate_page(from_path, template_path, dest_path) function.
@@ -58,4 +85,6 @@ def extract_title(markdown: str) -> str:   # It should pull the h1 header from t
             return Title
                 
     raise ValueError(f'invalid markdown syntax: no title found (h1 header)')
- 
+
+
+
