@@ -4,6 +4,23 @@ from htmlnode import HTMLNode, ParentNode, LeafNode
 
 from inline_markdown import split_nodes_delimiter, split_nodes_link, split_nodes_image, text_to_textnodes
 
+# CONVERTING MARKDOWN raw text TO HTMLNodes
+
+def markdown_to_html_node(markdown: str): #  converts a full markdown document into a single parent HTMLNode. 
+                                     # That one parent HTMLNode should (obviously) contain many child HTMLNode objects representing the nested elements.
+    
+    children = []
+
+    blocks = markdown_to_blocks(markdown) # 1. Split the markdown into blocks (you already have a function for this)
+
+    for block in blocks:  # 2. Loop over each block:
+        html_node = block_to_html_node(block)
+        children.append(html_node)
+
+    return ParentNode("div",children, None)    # Make all the block nodes children under a single parent HTML node (which should just be a div) and return it.
+
+
+# SUPPORTED MARKDOWN BLOCK TYPES Enum class 
 class BlockType(Enum):  # Our static site generator supports 6 types of markdown blocks
                              # 1. Create a BlockType enum with the block types 
     
@@ -19,6 +36,8 @@ class BlockType(Enum):  # Our static site generator supports 6 types of markdown
 
     PARAGRAPH = "paragraph" # If none of the above conditions are met, the block is a normal paragraph. 
 
+
+# ESSENTIALLY A MAPPER FUNCTION THAT MAPS GIVEN MARKDOWN BLOCK TO CORRESPONDING BLOCK TYPE (markdown block type)
 
 def block_to_block_type(block: str) -> BlockType:  # function that takes a single block of markdown text as input and returns the BlockType representing the type of block it is
                                                     # can assume all leading and trailing whitespace were already stripped 
@@ -72,6 +91,7 @@ def block_to_block_type(block: str) -> BlockType:  # function that takes a singl
 
     return BlockType.PARAGRAPH
     
+# MARKDOWN RAW STRING TO MARKDOWN BLOCKS CONVERSION
 
 def markdown_to_blocks(markdown: str) -> list[str] :   # It takes a raw Markdown string (representing a full document) as input and returns a list of "block" strings. 
 
@@ -88,35 +108,7 @@ def markdown_to_blocks(markdown: str) -> list[str] :   # It takes a raw Markdown
             
     return filtered_blocks 
 
-
-# CONVERTING MARKDOWN raw text TO HTMLNodes
-
-def markdown_to_html_node(markdown: str): #  converts a full markdown document into a single parent HTMLNode. 
-                                     # That one parent HTMLNode should (obviously) contain many child HTMLNode objects representing the nested elements.
-    
-    children = []
-
-    blocks = markdown_to_blocks(markdown) # 1. Split the markdown into blocks (you already have a function for this)
-
-    for block in blocks:  # 2. Loop over each block:
-        html_node = block_to_html_node(block)
-        children.append(html_node)
-
-    return ParentNode("div",children, None)    # Make all the block nodes children under a single parent HTML node (which should just be a div) and return it.
-
-
-def text_to_children(text: str) -> list[HTMLNode]: # function that works for all block types. It takes a string of text and returns a list of HTMLNodes that represent the inline markdown using previously created functions (like TextNode -> HTMLNode)
-
-    html_nodes = []   # will be children HTMLNodes
-    text_nodes = text_to_textnodes(text)  # taking the `block` raw markdown text and parsing and converting it into TextNodes
-
-    for text_node in text_nodes:    # iterating over the TextNodes
-
-        html_node = text_node_to_html_node(text_node)
-        html_nodes.append(html_node)    # taking the invidual TextNode and converting to individual HTMLNodes
-
-    return html_nodes   # all the individual HTMLNodes represents all the children of the given `block` from caller function
-
+# ESSENTIALLY A MAPPER FUNCTION TO TAKE A MARKDOWN BLOCK AND CALL THE CORRECT HELPER FUNCTION BASED ON GIVEN TYPE OF MARKDOWN BLOCK
 
 def block_to_html_node(block:str): # Caller function to call HELPER functions based on BlockType
                                                         # GIVEN an individual block type that then needs to be parsed by helper functions into children HTMLNodes
@@ -144,6 +136,24 @@ def block_to_html_node(block:str): # Caller function to call HELPER functions ba
 
             case _:
                 raise ValueError(f'invalid block type or block type not supported: {block}')
+
+
+# HELPER FUNCTION CONVERTS GIVEN SPECIFIC TEXT INTO CORRESPONDING CHILDREN HTML NODES (except for CODE blocks, that is handled manually)
+
+def text_to_children(text: str) -> list[HTMLNode]: # function that works for all block types. It takes a string of text and returns a list of HTMLNodes that represent the inline markdown using previously created functions (like TextNode -> HTMLNode)
+
+    html_nodes = []   # will be children HTMLNodes
+    text_nodes = text_to_textnodes(text)  # taking the `block` raw markdown text and parsing and converting it into TextNodes
+
+    for text_node in text_nodes:    # iterating over the TextNodes
+
+        html_node = text_node_to_html_node(text_node)
+        html_nodes.append(html_node)    # taking the invidual TextNode and converting to individual HTMLNodes
+
+    return html_nodes   # all the individual HTMLNodes represents all the children of the given `block` from caller function
+
+
+# HELPER FUNCTIONS TO CONVERT SPECIFIC MARKDOWN BLOCK TO CORRESPONDING HTML NODES
 
 
 def heading_to_html_node(block: str) -> ParentNode:  # Headings should be surrounded by a <h1> to <h6> tag, depending on the number of # characters.
@@ -252,7 +262,7 @@ def code_to_html_node(block:str) -> ParentNode:   # Code blocks should be surrou
 
     code = ParentNode( "code", [children] )   # Code blocks should be surrounded by a <code> tag 
     
-    return ParentNode( "pre", [code])      # nested inside a <pre> tag.
+    return ParentNode( "pre", [code] )      # nested inside a <pre> tag.
 
 
 

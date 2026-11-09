@@ -3,12 +3,19 @@ from textnode import TextNode, TextType
 
 from copy_static import copy_from_source_to_destination
 
+from generate_page import generate_page
+
 # Source Directory Path
 dir_path_static = "./static"
 
-
 # Destination Directory Path
 dir_path_destination = "./public"
+
+
+# GENERATING PAGES
+from_path = "content/index.md"
+template_html = "template.html"
+dest_path = "public/index.html"
 
 
 
@@ -19,6 +26,11 @@ def main():
     print(f'copying static files to public directory: {dir_path_static} -> {dir_path_destination}')
 
     copy_from_source_to_destination(dir_path_static,dir_path_destination)
+
+    generate_page(from_path, template_html, dest_path)
+
+
+
 
 main()
 
