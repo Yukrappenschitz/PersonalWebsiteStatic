@@ -1,6 +1,6 @@
 import os 
-import shutil
-import pathlib
+#import shutil
+#import pathlib import Path
 
 from markdown_blocks import (
     BlockType,
@@ -9,20 +9,20 @@ from markdown_blocks import (
     markdown_to_html_node, 
 )
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
-
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path) -> None: # recursively crawls the given dir_path_content directory and if it finds .md file, 
+                                                                                     # converts it to .html by calling the `generate_page` function and writes to the dest_dir_path                                                                          
     list_entry_dir = os.listdir(dir_path_content)
 
-    for entry in list_entry_dir:
-        from_path = os.path.join(dir_path_content, entry)
-        dest_path = os.path.join(dest_dir_path,entry)
+    for filename in list_entry_dir:    # 1.1 Crawl every entry in the content directory
+        from_path = os.path.join(dir_path_content, filename)         # 1.2 For each markdown file found, generate a new .html file using the same template.html
+        dest_path = os.path.join(dest_dir_path,filename)              # The generated pages should be written to the public directory in the same directory structure.
         
         if os.path.isfile(from_path):
 
             if from_path.endswith(".md"):
 
                 dest_path_html = os.path.splitext(dest_path)[0] + ".html"   # need to strip .md file extension and replace with .html
-
+                #dest_path = Path(dest_path).with_suffix(".html")
                 generate_page(from_path, template_path, dest_path_html)
             
         else:
@@ -32,11 +32,9 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                             dest_path
                             )
             
-    
+# GENERATING SINGULAR PAGE from .md to .html
 
-
-
-def generate_page(from_path: str, template_path: str, dest_path: str):      # 5.Create a generate_page(from_path, template_path, dest_path) function.
+def generate_page(from_path: str, template_path: str, dest_path: str) -> None:      # 5.Create a generate_page(from_path, template_path, dest_path) function.
 
     generating_message = f'Generating page from {from_path} to {dest_path} using {template_path}'
     print(generating_message)
@@ -73,7 +71,9 @@ def generate_page(from_path: str, template_path: str, dest_path: str):      # 5.
         to_file.write(page)
         
         to_file.close()                  # redundant close since python keyword `with` takes care of closing the file after block is finished running but kept in to waste time typing extra words cause bored and its late
-    
+
+
+# Extracting title from markdown
 
 def extract_title(markdown: str) -> str:   # It should pull the h1 header from the markdown file (the line that starts with a single #) and return it.
     lines = markdown.split("\n")

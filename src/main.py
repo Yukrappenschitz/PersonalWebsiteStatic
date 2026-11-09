@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys 
 
 from textnode import TextNode, TextType
 
@@ -30,15 +31,7 @@ def main():
     # page generation
     print("Generating pages...")         
 
-    generate_pages_recursive(dir_path_content, template_path, dir_path_public)
-
-
-    
-    """generate_page(
-        os.path.join(dir_path_content, "index.md"), 
-        template_path_html, 
-        os.path.join(dir_path_public, "index.html")
-        )"""
+    generate_pages_recursive(dir_path_content, template_path, dir_path_public)    # 2. should generate a page for every markdown file in the content directory and write the results to the public directory.
 
 
 
@@ -51,4 +44,10 @@ if __name__ == "__main__":
 
 
 
+    
+    """generate_page(
+        os.path.join(dir_path_content, "index.md"), 
+        template_path_html, 
+        os.path.join(dir_path_public, "index.html")
+        )"""
 
