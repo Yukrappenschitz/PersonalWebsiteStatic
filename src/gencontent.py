@@ -9,32 +9,34 @@ from markdown_blocks import (
     markdown_to_html_node, 
 )
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path) -> None: # recursively crawls the given dir_path_content directory and if it finds .md file, 
+
+def generate_pages_recursive(content_dir_path, template_path, dest_dir_path, basepath) -> None: # recursively crawls the given dir_path_content directory and if it finds .md file, 
                                                                                      # converts it to .html by calling the `generate_page` function and writes to the dest_dir_path                                                                          
-    list_entry_dir = os.listdir(dir_path_content)
+    list_entry_dir = os.listdir(content_dir_path)
 
     for filename in list_entry_dir:    # 1.1 Crawl every entry in the content directory
-        from_path = os.path.join(dir_path_content, filename)         # 1.2 For each markdown file found, generate a new .html file using the same template.html
+        from_path = os.path.join(content_dir_path, filename)         # 1.2 For each markdown file found, generate a new .html file using the same template.html
         dest_path = os.path.join(dest_dir_path,filename)              # The generated pages should be written to the public directory in the same directory structure.
         
         if os.path.isfile(from_path):
 
-            if from_path.endswith(".md"):
+            if from_path.endswith(".md"):       # need to pass only markdown files to html parser
 
                 dest_path_html = os.path.splitext(dest_path)[0] + ".html"   # need to strip .md file extension and replace with .html
                 #dest_path = Path(dest_path).with_suffix(".html")
-                generate_page(from_path, template_path, dest_path_html)
+                generate_page(from_path, template_path, dest_path_html, basepath)
             
         else:
             generate_pages_recursive( 
                             from_path,
                             template_path, 
-                            dest_path
+                            dest_path,
+                            basepath
                             )
             
 # GENERATING SINGULAR PAGE from .md to .html
 
-def generate_page(from_path: str, template_path: str, dest_path: str) -> None:      # 5.Create a generate_page(from_path, template_path, dest_path) function.
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath) -> None:      # 5.Create a generate_page(from_path, template_path, dest_path) function.
 
     generating_message = f'Generating page from {from_path} to {dest_path} using {template_path}'
     print(generating_message)
@@ -59,7 +61,11 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:  
     # Title and content injection like the best medical grade morphine stolen from a truck run that the driver was definitely involved in but now the driver lives in a cave after being betrayed by the dealers that actually stole them heavenly juice
     page = template_html.replace( "{{ Title }}", Title )      # 5.6 Replace the {{ Title }} and {{ Content }} placeholders in the template with the HTML and title you generated.
     page = page.replace("{{ Content }}", Content) 
-    
+
+    # Basepath Reference Injection
+
+    page.replace("href=/", f'href={basepath}')
+    page.replace("src=/", f'src={basepath}')
     
     dest_dir_path = os.path.dirname(dest_path)   # just getting the directory path of the file since we are supplied a path relative to the root of the project  
     
@@ -84,7 +90,7 @@ def extract_title(markdown: str) -> str:   # It should pull the h1 header from t
             Title = line[2 : ]               
             return Title
                 
-    raise ValueError(f'invalid markdown syntax: no title found (h1 header)')
+    raise ValueError(f'invalid markdown syntax: NEIN NEIN!! falsch – absolut FALSCH! no title found (h1 header)')
 
 
 
