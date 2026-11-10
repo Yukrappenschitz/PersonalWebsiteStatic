@@ -1,5 +1,5 @@
 #!/bin/bash
-python3 src/main.py "/StaticSiteGenerator/"
+python3 src/main.py "/PersonalWebsiteStatic/"
 
 
 
