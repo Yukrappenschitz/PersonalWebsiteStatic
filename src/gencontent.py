@@ -58,9 +58,8 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath) 
     page = page.replace("{{ Content }}", Content) 
 
     # Basepath Reference Injection
-
-    page = page.replace("href=/", f'href={basepath}')
-    page = page.replace("src=/", f'src={basepath}')
+    page = page.replace('href="/', f'href="{basepath}')
+    page = page.replace('src="/', f'src="{basepath}')
     
     dest_dir_path = os.path.dirname(dest_path)   # just getting the directory path of the file since we are supplied a path relative to the root of the project  
     

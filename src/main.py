@@ -28,9 +28,9 @@ def main():
         basepath = "/"              # defaults to "/" path for local testing and building
 
     # file content copying
-    print(f'deleting public directory: {docs_dir_path}')
+    print(f'deleting destination directory: {docs_dir_path}')
 
-    print(f'copying static files to public directory: {static_dir_path} -> {docs_dir_path}')
+    print(f'copying files to destination directory: {static_dir_path} -> {docs_dir_path}')
 
     copy_from_source_to_destination( static_dir_path, docs_dir_path )
 
