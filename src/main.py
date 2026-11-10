@@ -1,5 +1,3 @@
-import os
-import shutil
 import sys 
 
 from copy_static import copy_from_source_to_destination
@@ -8,17 +6,17 @@ from gencontent import generate_pages_recursive
 
 
 # !! FOR WEB BUILDING Docs Directory Path
-docs_dir_path = "./docs"
+docs_dir_path = "docs"
 
 # Static Directory Path
-static_dir_path = "./static"
+static_dir_path = "static"
 # Content Directory Path
-content_dir_path = "./content"
+content_dir_path = "content"
 # Template HTML file path
-template_path = "./template.html"
+template_path = "template.html"
 
 # !! FOR LOCAL TESTING Public Directory Path
-dir_path_public = "./public"
+dir_path_public = "public"
 
 
 def main():
