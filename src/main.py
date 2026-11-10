@@ -22,7 +22,7 @@ dir_path_public = "public"
 def main():
 
     # grabbing basepath  
-    if len(sys.argv[1]) > 1:      # the sys.argv to grab the first CLI argument to the program. Save it as the basepath. If one isn't provided, default to /
+    if len(sys.argv) > 1:      # the sys.argv to grab the first CLI argument to the program. Save it as the basepath. If one isn't provided, default to /
         basepath = sys.argv[1]
     else:
         basepath = "/"              # defaults to "/" path for local testing and building
